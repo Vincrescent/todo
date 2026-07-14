@@ -8,16 +8,24 @@ async function bootstrap() {
 
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // buang field yang tidak terdaftar di DTO
-      forbidNonWhitelisted: true, // lempar 400 kalau ada field asing
-      transform: true, // ubah payload plain object jadi instance DTO + tipe data
+      whitelist: true, 
+      forbidNonWhitelisted: true, 
+      transform: true, 
       transformOptions: {
         enableImplicitConversion: true,
       },
     }),
   );
 
-  app.enableCors();
+  const corsOrigins = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',')
+    : ['http://localhost:5173', 'http://127.0.0.1:5173'];
+
+  app.enableCors({
+    origin: corsOrigins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    credentials: true,
+  });
 
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
